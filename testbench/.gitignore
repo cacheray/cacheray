@@ -1,0 +1,5 @@
+cachegrind.*
+*.out
+*.trace*
+testrun*
+traceLog.txt

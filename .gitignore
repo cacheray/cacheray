@@ -1,0 +1,22 @@
+# Basic blocks
+*.o
+*.elf
+*.vscode
+*.swp
+*.ll
+*.bin
+*.tmp
+*.a
+*.so*
+*.z
+*.class
+__pycache__
+.idea
+/temp/
+
+# If you don't want to be bothered by git
+*.x.*
+
+# Remove this if we need static json files
+*.json
+!sim/**/*.json

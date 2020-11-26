@@ -1,0 +1,14 @@
+core.SimpleSim - The Best Cache-simulator in this repo
+-----
+Requirements:
+* Maven (some modern version)
+* Java (not ancient)
+
+Installation:
+
+    mvn package
+
+Running it:
+    
+    java -jar target/simple-sim-java(....)
+    

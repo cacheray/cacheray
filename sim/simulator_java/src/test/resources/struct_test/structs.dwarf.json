@@ -1,0 +1,142 @@
+{
+    "structs": [
+        {
+            "id": 87,
+            "members": [
+                {
+                    "id": 144,
+                    "memberName": "type",
+                    "name": "unsigned char",
+                    "offset": 0,
+                    "size": 1
+                },
+                {
+                    "id": 162,
+                    "memberName": "addr",
+                    "name": "void*",
+                    "offset": 1,
+                    "size": 8
+                },
+                {
+                    "id": 155,
+                    "memberName": "size",
+                    "name": "unsigned char",
+                    "offset": 9,
+                    "size": 1
+                },
+                {
+                    "id": 163,
+                    "memberName": "threadid",
+                    "name": "long unsigned int",
+                    "offset": 10,
+                    "size": 8
+                }
+            ],
+            "name": "struct cacheray_log_l"
+        },
+        {
+            "id": 451,
+            "members": [
+                {
+                    "id": 239,
+                    "memberName": "a",
+                    "name": "int",
+                    "offset": 0,
+                    "size": 4
+                },
+                {
+                    "id": 496,
+                    "memberName": "b",
+                    "name": "long int",
+                    "offset": 8,
+                    "size": 8
+                },
+                {
+                    "id": 446,
+                    "memberName": "c",
+                    "name": "char*",
+                    "offset": 16,
+                    "size": 8
+                }
+            ],
+            "name": "struct Basic"
+        },
+        {
+            "id": 524,
+            "members": [
+                {
+                    "id": 239,
+                    "memberName": "at",
+                    "name": "int",
+                    "offset": 0,
+                    "size": 4
+                },
+                {
+                    "id": 239,
+                    "memberName": "bt",
+                    "name": "int",
+                    "offset": 4,
+                    "size": 4
+                }
+            ],
+            "name": "struct TdBasic"
+        },
+        {
+            "id": 562,
+            "members": [
+                {
+                    "id": 239,
+                    "memberName": "a",
+                    "name": "int",
+                    "offset": 0,
+                    "size": 4
+                },
+                {
+                    "id": 451,
+                    "memberName": "b",
+                    "name": "struct Basic",
+                    "offset": 8,
+                    "size": 24
+                },
+                {
+                    "id": 503,
+                    "memberName": "c",
+                    "name": "struct Basic*",
+                    "offset": 32,
+                    "size": 8
+                },
+                {
+                    "id": 513,
+                    "memberName": "d",
+                    "name": "struct TdBasic",
+                    "offset": 40,
+                    "size": 8
+                },
+                {
+                    "id": 508,
+                    "memberName": "e",
+                    "name": "struct TdBasic*",
+                    "offset": 48,
+                    "size": 8
+                }
+            ],
+            "name": "struct Deep"
+        }
+    ],
+    "typedefs": [
+        {
+            "def": "struct cacheray_log_l",
+            "type": "cacheray_log_t"
+        },
+        {
+            "def": "unsigned char",
+            "type": "cacheray_event_t"
+        },
+        {
+            "def": "struct TdBasic",
+            "type": "TheTdBasic"
+        }
+    ],
+    "unions": [],
+    "version": 4
+}

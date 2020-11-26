@@ -1,0 +1,32 @@
+digraph G {
+    size ="4,4";
+    Cacheray [shape=box];
+    "Cacheray Simulator" [shape=box];
+    Clang [shape=box];
+    dwarf2json [shape=box];
+    "LLVM pass" [shape=box];
+
+    "C source" [shape=ellipse];
+    "libcacheray.a" [shape=ellipse];
+    "Executable (with instrum.)" [shape=ellipse];
+    "Debug Data" [shape=ellipse];
+    "Trace Output" [shape=ellipse];
+    "Static Struct List" [shape=ellipse]
+
+    Cacheray -> "libcacheray.a";
+    "C source" -> Clang;
+    "libcacheray.a" -> Clang;
+    "LLVM pass" -> Clang;
+    Clang -> "Executable (with instrum.)";
+    "Executable (with instrum.)" -> "Trace Output" [label="Execution"];
+    "Executable (with instrum.)" -> dwarf2json;
+    dwarf2json -> "Debug Data";
+
+    "Debug Data" -> "Cacheray Simulator";
+    "Trace Output" -> "Cacheray Simulator";
+    "Config File" -> "Cacheray Simulator";
+    "Static Struct List" -> "Cacheray Simulator";
+
+    "Cacheray Simulator" -> "Accesses";
+    "Cacheray Simulator" -> "Struct Stats";
+}

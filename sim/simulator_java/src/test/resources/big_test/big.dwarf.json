@@ -1,0 +1,58 @@
+{
+    "structs": [
+        {
+            "id": 89,
+            "members": [
+                {
+                    "id": 146,
+                    "memberName": "type",
+                    "name": "unsigned char",
+                    "offset": 0,
+                    "size": 1
+                },
+                {
+                    "id": 164,
+                    "memberName": "addr",
+                    "name": "void*",
+                    "offset": 1,
+                    "size": 8
+                },
+                {
+                    "id": 157,
+                    "memberName": "size",
+                    "name": "unsigned char",
+                    "offset": 9,
+                    "size": 1
+                },
+                {
+                    "id": 165,
+                    "memberName": "threadid",
+                    "name": "long unsigned int",
+                    "offset": 10,
+                    "size": 8
+                }
+            ],
+            "name": "struct cacheray_log_l"
+        }
+    ],
+    "typedefs": [
+        {
+            "def": "struct cacheray_log_l",
+            "type": "cacheray_log_t"
+        },
+        {
+            "def": "unsigned char",
+            "type": "cacheray_event_t"
+        },
+        {
+            "def": "long unsigned int",
+            "type": "size_t"
+        },
+        {
+            "def": "long unsigned int",
+            "type": "size_t"
+        }
+    ],
+    "unions": [],
+    "version": 4
+}

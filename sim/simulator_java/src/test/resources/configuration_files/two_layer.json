@@ -1,0 +1,20 @@
+{
+  "caches" : [
+    {
+      "name" : "L1",
+      "cache_size" : 16,
+      "block_size" : 6,
+      "write_policy" : 0,
+      "set_assoc" : 1,
+      "rep_policy" : 0
+    },
+    {
+      "name" : "L2",
+      "cache_size" : 18,
+      "block_size" : 6,
+      "write_policy" : 0,
+      "set_assoc" : 1,
+      "rep_policy" : 0
+    }
+  ]
+}
