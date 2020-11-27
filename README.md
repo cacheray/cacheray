@@ -3,9 +3,12 @@
 Cacheray is a tool suite to analyze memory access patterns in real programs and
 simulate their effects on CPU caches.
 
-It originated as a thesis project by Hannes Åström (@hannesastrom) and Wilhelm
-Lundström (@WilhelmLund) at [Sandvine](http://www.sandvine.com), supervised by
-Kim Gräsman (@kimgr).
+It originated as a thesis project at [Sandvine](http://www.sandvine.com) by:
+
+* [Hannes Åström](https://github.com/hannesastrom)
+* [Wilhelm Lundström](https://github.com/WilhelmLund)
+
+supervised by [Kim Gräsman](https://github.com/kimgr).
 
 
 ## Cacheray runtime
