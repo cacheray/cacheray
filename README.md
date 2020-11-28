@@ -8,7 +8,7 @@ It originated as a thesis project at [Sandvine](http://www.sandvine.com) by:
 * [Hannes Åström](https://github.com/hannesastrom)
 * [Wilhelm Lundström](https://github.com/WilhelmLund)
 
-supervised by [Kim Gräsman](https://github.com/kimgr).
+Supervised by [Kim Gräsman](https://github.com/kimgr).
 
 
 ## Cacheray runtime
