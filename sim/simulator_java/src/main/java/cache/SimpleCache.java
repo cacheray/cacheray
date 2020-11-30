@@ -28,6 +28,7 @@ public abstract class SimpleCache{
 	protected int hits;
 	protected int misses;
 	protected int accesses;
+	protected int reads;
 
 	// TODO: Add bound checking so that cacheSize and blockSize have reasonalbe values
 	public SimpleCache(String name, int cacheSize, int blockSize, short writePolicy, short replacementPolicy, SimpleCache nextLevel){
@@ -41,6 +42,11 @@ public abstract class SimpleCache{
 		hits = 0;
 		misses = 0;
 		accesses = 0;
+		reads = 0;
+	}
+
+	public void read_cache(Address addr, short size, BufferedWriter writer, boolean silent, CacheAccess ca){
+
 	}
 
 	public abstract void read(Address addr, short size, BufferedWriter writer, boolean silent, CacheAccess ca);
@@ -54,8 +60,8 @@ public abstract class SimpleCache{
     public void printStatistics(int n){
     	System.out.println(name + ": ");
 		System.out.println(this.getAccesses() + " accesses");
-    	System.out.println(this.getHits() + " hits. " + (this.getHits() / (double) getAccesses()) * 100 + "% hit rate.");
-    	System.out.println(this.getMisses() + " misses. " + (this.getMisses() / (double) getAccesses()) * 100 + "% miss rate.");
+    	System.out.println(this.getHits() + " hits. " + (this.getHits() / (double) getReads()) * 100 + "% hit rate.");
+    	System.out.println(this.getMisses() + " misses. " + (this.getMisses() / (double) getReads()) * 100 + "% miss rate.");
     	System.out.println(" ");
 
     	if(nextLevel != null)
@@ -64,6 +70,10 @@ public abstract class SimpleCache{
 
 	private int getAccesses() {
     	return accesses;
+	}
+
+	private int getReads() {
+    	return reads;
 	}
 
 	/**

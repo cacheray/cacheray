@@ -76,6 +76,7 @@ public class FullyAssociativeCache extends SimpleCache{
 					ca.miss();
 				}
 			}
+			accesses++;
 		}
 		ca.decreaseLevel();
 	}
@@ -97,6 +98,7 @@ public class FullyAssociativeCache extends SimpleCache{
 					super.printEvicted(alignedAddr, evicted);
 			}
 			alignedAddr = alignedAddr.advance(super.blockSize);
+			accesses++;
 		}
 	}
 

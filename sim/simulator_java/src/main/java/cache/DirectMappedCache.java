@@ -81,6 +81,7 @@ public class DirectMappedCache extends SimpleCache{
 
 			// Check the next block in "blocks", which will be blockSize addresses after the current block
 			alignedAddr = alignedAddr.advance(super.blockSize);
+			accesses++;
 		}
 		ca.decreaseLevel();
 	}
@@ -97,6 +98,7 @@ public class DirectMappedCache extends SimpleCache{
 		Address topAddr = addr.aligned(size);
 		for(int i = 0; i < blocks.size() && alignedAddr.lessThan(topAddr); i++){
 			blocks.get(i).update(alignedAddr, true);
+			accesses++;
 		}
 	}
 
