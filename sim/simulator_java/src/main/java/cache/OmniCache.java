@@ -1,71 +1,96 @@
 package cache;
 
 import types.Address;
+import types.Block;
 import types.CacheAccess;
+import types.CacheBlock;
 
 import java.io.BufferedWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 public class OmniCache extends SimpleCache {
-    private final List<List<Address>> sets;
+    private final CacheBlock[][] sets;
+    private Random random;
 
-    public OmniCache(String name, int cacheSize, int blockSize, short writePolicy, short replacementPolicy, SimpleCache nextLevel) {
+    public OmniCache(String name, int cacheSize, int blockSize, int associativity, short writePolicy, short replacementPolicy, SimpleCache nextLevel) {
         super(name, cacheSize, blockSize, writePolicy, replacementPolicy, nextLevel);
-
-        // Create sets
-        int n_sets = this.cacheSize / (this.associativity * this.blockSize);
-        sets = new ArrayList<>();
-        for (int i = 0; i < n_sets; i++) {
-            List<Address> temp = new ArrayList<>();
-            for (int j = 0; j < this.associativity; j++) {
-                temp.add(j, new Address());
-            }
-            sets.add(i, temp);
+        int n_blocks = this.cacheSize / this.blockSize;
+        assert(this.cacheSize % this.blockSize == 0);
+        int nSets;
+        if (associativity != 0) {
+            nSets = n_blocks / associativity;
+        } else {
+            nSets = 1;
+            associativity = n_blocks;
         }
+        this.associativity = (short)associativity;
+        sets = new CacheBlock[associativity][nSets];
+        random = new Random();
     }
 
     @Override
     public void read(Address addr, short size, BufferedWriter writer, boolean silent, CacheAccess ca) {
         // 1. See which set it belongs too. Can be done by mod'ing the address
-        long set = addr.mod(this.associativity);
+        long[] addressable = addr.getTIO(cacheSize / blockSize, blockSize);
+        long offset = addressable[2];
+        long index = addressable[1];
+        long tag = addressable[0];
+        accesses++;
+        reads++;
 
-        // 2. Is the address already in the set?
-        //      If yes, register hit and return
-        //boolean hit = false;
-        List<Address> theSet = this.sets.get((int)set);
-       // Address[] addressesAccessed = addr.getHitAddresses(size, blockSize);
-        for (int index = 0; index < this.associativity; index++) {
-            if (theSet.get(index).containsAddress(addr, this.blockSize)) {
-                // Hit!
-                ca.hit();
-                this.hits += 1;
+        CacheBlock[] set = sets[(int)index % associativity];
+        for (CacheBlock b : set) {
+            if (b == null) {
+                // nothin here
+                continue;
+            }
+
+            if (b.getTag() == (int)tag) {
+                // correct! we have a hit!
+                hits++;
                 return;
             }
         }
+        // Didn't find it. Lets fetch from lower level
+        ca.decreaseLevel();
+        misses++;
+        readNextLevel(addr,size,writer,silent,ca);
+        ca.increaseLevel();
 
-        // 3. Register miss and fetch from below
-        ca.miss();
-        this.misses += 1;
+        // Now we have ned block, lets place it
+        // yeet random block lol
+        int blocksLength = set.length;
+        sets[(int)index % associativity][random.nextInt(blocksLength)] = new CacheBlock(tag,true);
+    }
 
-
-        // 4. Check with CacheRep which line should be replaced
-
-        // 5. Return
+    private void readNextLevel(Address addr, short size, BufferedWriter writer, boolean silent, CacheAccess ca){
+        if (nextLevel == null) {
+            ca.miss();
+        } else {
+            nextLevel.read(addr,size,writer,silent,ca);
+        }
     }
 
     @Override
     public void write(Address addr, short size, BufferedWriter writer, boolean silent) {
-
+        long[] addressable = addr.getTIO(cacheSize / blockSize, blockSize);
+        long offset = addressable[2];
+        long index = addressable[1];
+        long tag = addressable[0];
+        accesses++;
+        reads++;
+        CacheBlock[] set = sets[(int)index % associativity];
+        int blocksLength = set.length;
+        sets[(int)index % associativity][random.nextInt(blocksLength)] = new CacheBlock(tag,true);
     }
 
     @Override
     public int getHits() {
-        return 0;
+        return hits;
     }
 
     @Override
     public int getMisses() {
-        return 0;
+        return misses;
     }
 }

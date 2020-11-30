@@ -74,6 +74,7 @@ public class NAssociativeCache extends SimpleCache{
 				}
 			}
 			accesses++;
+			reads++;
 		}
 		ca.decreaseLevel();
 	}
@@ -91,6 +92,7 @@ public class NAssociativeCache extends SimpleCache{
 					super.printEvicted(alignedAddr, evicted);
 			}
 			alignedAddr = alignedAddr.advance(super.blockSize);
+			accesses++;
 		}
 	}
 
