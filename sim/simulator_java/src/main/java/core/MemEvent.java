@@ -26,6 +26,6 @@ public class MemEvent extends TraceEvent{
     }
 
     public String getEventAsString() {
-        return "CPU: " + threadId + "\tEVENT: " + TraceType.getName(type) + "\tAddress: " + addr.toString() + "\tSIZE: " + size;
+        return "CPU: " + threadId + "\tEVENT: " + TraceType.getName(type) + "\tAddress: " + addr.toString() + "\tSIZE: " + size + "\tTag: " + this.addr.getTIO(512,64)[0] + "\tIndex: " + this.addr.getTIO(512,64)[1];
     }
 }

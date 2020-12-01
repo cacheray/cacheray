@@ -20,14 +20,17 @@ public class NAssociativeCache extends SimpleCache{
 
 	public NAssociativeCache(String name, int cacheSize, int blockSize, short writePolicy, short replacementPolicy, SimpleCache nextLevel, int n){
 		super(name, cacheSize, blockSize, writePolicy, replacementPolicy, nextLevel);
+		associativity = (short)n;
 		nCacheBlocks = super.cacheSize / super.blockSize;
-		nSets = 1 << n;
-		setSize = nCacheBlocks / n;
+		nSets = nCacheBlocks / n;
+		setSize = associativity;
 		crm = new CacheReplacementManager(replacementPolicy);
 		cache = new HashMap<>();
 		
 		for(int i = 0; i < nSets; i++)
-			cache.put(i, crm.initBlocks(setSize, blockSize));
+			cache.put(i, crm.initBlocks(setSize, blockSize, associativity));
+		System.out.println("Created cache " + name +" with block size " + super.blockSize + " sets " + nSets + " n_blocks " + nCacheBlocks + " assoc " + n + " cache size " + super.cacheSize);
+
 	}
 
 	public void read(Address addr, short size, BufferedWriter writer, boolean silent, CacheAccess ca){
@@ -97,7 +100,7 @@ public class NAssociativeCache extends SimpleCache{
 	}
 
 	private Collection<Block> getBlocks(Address alignedAddr){
-		Integer set = new Integer((int)((alignedAddr.getValue()/blockSize) % nSets));
+		Integer set = (int) ((alignedAddr.getValue() / blockSize) % nSets);
 		return cache.get(set);
 	}
 
