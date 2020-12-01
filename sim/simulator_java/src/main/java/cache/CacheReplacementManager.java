@@ -48,18 +48,19 @@ public class CacheReplacementManager{
 	*
 	* @return - returns a collection that is to represent the cache
 	*/
-	public Collection<Block> initBlocks(int nCacheBlocks, int blockSize){
+	public Collection<Block> initBlocks(int nCacheBlocks, int blockSize, int assoc){
 		this.nCacheBlocks = nCacheBlocks;
 		this.blockSize = blockSize;
 		switch(rp){
+			case FIFO:
 			case LRU:
-				return new LinkedList<Block>();
+				var list = new LinkedList<Block>();
+				for (int i = 0; i < assoc; i++) list.add(new Block(-1, Address.NULL_ADDRESS, false));
+				return list;
 			case LIFO:
 				return new Stack<Block>();
 			case FILO:
 				break;
-			case FIFO:
-				return new LinkedList<Block>();
 			case RANDOM: //lol
 				return new HashSet<Block>();
 		}

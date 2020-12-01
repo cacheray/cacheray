@@ -17,7 +17,7 @@ public class FullyAssociativeCache extends SimpleCache{
 		super(name, cacheSize, blockSize, writePolicy, replacementPolicy, nextLevel);
 		nCacheBlocks = super.cacheSize / super.blockSize;
 		crm = new CacheReplacementManager(replacementPolicy);
-		cache = crm.initBlocks(nCacheBlocks, blockSize);
+		cache = crm.initBlocks(nCacheBlocks, blockSize, nCacheBlocks);
 	}
 
 	/**

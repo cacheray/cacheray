@@ -7,13 +7,7 @@ import java.util.List;
 
 public class Address implements Comparable<Address>{
     public static final Address NULL_ADDRESS = new Address(-1);
-
     private Long value;
-    private ByteBuffer address;
-
-    public Address(ByteBuffer address) {
-        this.address = address;
-    }
 
     public Address(String inValue){
         value = Long.decode(inValue);
@@ -85,17 +79,13 @@ public class Address implements Comparable<Address>{
         return this.value % val;
     }
 
-    public long[] getTIO(int nBlocks, int blockSize) {
-        BigInteger val = BigInteger.valueOf(value);
-        int[] tio = new int[3];
-        BigInteger[] col = val.divideAndRemainder(BigInteger.valueOf(blockSize));
-        BigInteger nextVal = col[0];
-        BigInteger[] col2 = val.divideAndRemainder(BigInteger.valueOf(nBlocks));
-        BigInteger nextVal2 = col2[0];
-        long offset = col[1].longValue();
-        long index = col2[1].longValue();
-        long tag = col2[0].longValue();
-        return new long[]{tag,index,offset};
+    public long[] getTIO(int nBlocksBin, int blockSizeBin) {
+        long value = getValue();
+        long offset = value % blockSizeBin;
+        value /= blockSizeBin;
+        long index = value % nBlocksBin;
+        value /= nBlocksBin;
+        return new long[]{value,index,offset};
     }
 
 /*

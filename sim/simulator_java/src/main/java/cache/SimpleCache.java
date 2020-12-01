@@ -4,6 +4,7 @@ import types.Address;
 import types.Block;
 import types.CacheAccess;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public abstract class SimpleCache{
 
 	protected boolean writeHit(BufferedWriter writer, Address addr, short size){
 		try{
-			writer.append(name + ": HIT " + addr.toString() + ", " + size + " bytes\n");
+			writer.append(name + ": HIT " + addr.toString() + ", " + size + " bytes. Tag, index, offset" + Arrays.toString(addr.getTIO(512, 64)) + "\n");
 			return true;
 		}catch(IOException e){
 			return false;
@@ -114,7 +115,7 @@ public abstract class SimpleCache{
 
 	protected boolean writeMiss(BufferedWriter writer, Address addr, short size){
 		try{
-			writer.append(name + ": MISS " + addr.toString() + ", " + size + " bytes\n");
+			writer.append(name + ": MISS " + addr.toString() + ", " + size + " bytes.  Tag, index, offset" + Arrays.toString(addr.getTIO(512, 64)) + "\n");
 			return true;
 		}catch(IOException e){
 			return false;
@@ -137,4 +138,6 @@ public abstract class SimpleCache{
 	protected void printEvicted(Address addr, Block block){
 		System.out.println(name + ": EVICTED content of block " + block.getTag() + ", previously " + block.getAddress().toString() + ", now " + addr.toString());
 	}
+
+	public String getName() {return name;}
 }

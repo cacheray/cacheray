@@ -6,11 +6,14 @@ import types.CacheAccess;
 import types.CacheBlock;
 
 import java.io.BufferedWriter;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class OmniCache extends SimpleCache {
-    private final CacheBlock[][] sets;
-    private Random random;
+    private final List<List<CacheBlock>> sets;
+    private final Random random;
 
     public OmniCache(String name, int cacheSize, int blockSize, int associativity, short writePolicy, short replacementPolicy, SimpleCache nextLevel) {
         super(name, cacheSize, blockSize, writePolicy, replacementPolicy, nextLevel);
@@ -24,8 +27,18 @@ public class OmniCache extends SimpleCache {
             associativity = n_blocks;
         }
         this.associativity = (short)associativity;
-        sets = new CacheBlock[associativity][nSets];
+        sets = new ArrayList<>();
+        for (int i = 0; i < nSets; i++) {
+            LinkedList<CacheBlock> set = new LinkedList<>();
+            for (int j = 0; j < associativity; j++) {
+                set.add(new CacheBlock(-1, false));
+            }
+            sets.add(set);
+        }
         random = new Random();
+
+        assert(this.blockSize % 8 == 0);
+        System.out.println("Created cache " + name +" with block size " + this.blockSize + " sets " + nSets + " n_blocks " + n_blocks + " assoc " + this.associativity);
     }
 
     @Override
@@ -37,8 +50,9 @@ public class OmniCache extends SimpleCache {
         long tag = addressable[0];
         accesses++;
         reads++;
+        System.out.println("Index " + index + ", tag " + tag +" read");
 
-        CacheBlock[] set = sets[(int)index % associativity];
+        List<CacheBlock> set = sets.get((int)index / associativity);
         for (CacheBlock b : set) {
             if (b == null) {
                 // nothin here
@@ -47,20 +61,23 @@ public class OmniCache extends SimpleCache {
 
             if (b.getTag() == (int)tag) {
                 // correct! we have a hit!
-                hits++;
+                super.hits++;
+                super.writeHit(writer, addr, size);
+                ca.hit();
                 return;
             }
         }
         // Didn't find it. Lets fetch from lower level
-        ca.decreaseLevel();
-        misses++;
-        readNextLevel(addr,size,writer,silent,ca);
         ca.increaseLevel();
+
+        readNextLevel(addr,size,writer,silent,ca);
+        misses++;
 
         // Now we have ned block, lets place it
         // yeet random block lol
-        int blocksLength = set.length;
-        sets[(int)index % associativity][random.nextInt(blocksLength)] = new CacheBlock(tag,true);
+        int blocksLength = set.size();
+        sets.get((int)index / associativity).set(random.nextInt(blocksLength), new CacheBlock(tag,true));
+        ca.decreaseLevel();
     }
 
     private void readNextLevel(Address addr, short size, BufferedWriter writer, boolean silent, CacheAccess ca){
@@ -78,10 +95,9 @@ public class OmniCache extends SimpleCache {
         long index = addressable[1];
         long tag = addressable[0];
         accesses++;
-        reads++;
-        CacheBlock[] set = sets[(int)index % associativity];
-        int blocksLength = set.length;
-        sets[(int)index % associativity][random.nextInt(blocksLength)] = new CacheBlock(tag,true);
+        List<CacheBlock> set = sets.get((int)index / associativity);
+        int blocksLength = set.size();
+        sets.get((int)index / associativity).set(random.nextInt(blocksLength), new CacheBlock(tag,true));
     }
 
     @Override
