@@ -19,5 +19,6 @@ target_include_directories(cacheray
 add_subdirectory(test)
 add_subdirectory(tracecheck)
 
+install(TARGETS cacheray-trace-check DESTINATION bin)
 install(TARGETS cacheray DESTINATION lib)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
