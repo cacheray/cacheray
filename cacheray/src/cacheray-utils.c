@@ -32,13 +32,11 @@ int cacheray_check_trace(FILE *trace_file, cacheray_access_stats_t *stats) {
     switch (base_type) {
     case CACHERAY_EVENT_READ ... CACHERAY_EVENT_WRITE:
       fread(&norm_event, sizeof(cacheray_log_t), 1, trace_file);
-      printf("Access at addr: %p\n", norm_event.addr);
       break;
     case CACHERAY_EVENT_RTTA_ADD: {
       int size = sizeof(norm_rtta_add) - sizeof(norm_rtta_add.typename);
       fread(&norm_rtta_add, size, 1, trace_file);
       fread(&norm_rtta_add.typename, 1, norm_rtta_add.typename_len, trace_file);
-      printf("Location of RTTA: %p\n", norm_rtta_add.addr);
       break;
     }
     case CACHERAY_EVENT_RTTA_REMOVE: {
@@ -49,7 +47,6 @@ int cacheray_check_trace(FILE *trace_file, cacheray_access_stats_t *stats) {
       return CACHERAY_CHECK_WRONG_TYPE;
     };
 
-    printf("Event type %d\n", base_type);
 
     /* Update stats */
     if (stats) {
@@ -58,8 +55,6 @@ int cacheray_check_trace(FILE *trace_file, cacheray_access_stats_t *stats) {
       }
       stats->accs[ch] += 1;
     }
-    printf("Size of norm: %lu, size of trail: %lu\n", sizeof(norm_rtta_add),
-           sizeof(norm_rtta_add.typename));
   }
 
   return CACHERAY_CHECK_CORRECT;
