@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   }
 
   // Init all stats to -1, so we can see which were incremented.
-  //memset(stats->accs, -1, sizeof(stats->accs) / sizeof(stats->accs[0]));
+  // memset(stats->accs, -1, sizeof(stats->accs) / sizeof(stats->accs[0]));
   for (int i = 0; i < UINT8_MAX; i++) {
     stats->accs[i] = -1;
   }

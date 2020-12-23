@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <cacheray/cacheray.h>
 #include <cacheray/cacheray-utils.h>
-
-
+#include <cacheray/cacheray.h>
 
 /*
  * Here are the structs that we are working with:
@@ -40,7 +38,7 @@ int main(int argc, char **argv) {
   // LL creation
   struct Link *curr = NULL;
   struct Link *prev = NULL;
-  for(int i = 0; i < LINK_LENGTH; i++) {
+  for (int i = 0; i < LINK_LENGTH; i++) {
     curr = malloc(sizeof(struct Link));
     curr->data = i;
     curr->next = prev;
