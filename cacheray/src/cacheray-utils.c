@@ -47,7 +47,6 @@ int cacheray_check_trace(FILE *trace_file, cacheray_access_stats_t *stats) {
       return CACHERAY_CHECK_WRONG_TYPE;
     };
 
-
     /* Update stats */
     if (stats) {
       if (stats->accs[ch] == -1) {
