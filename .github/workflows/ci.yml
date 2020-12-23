@@ -21,6 +21,7 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main"
           sudo apt update
           sudo apt install -y clang
+          sudo apt install -y clang-format
 
       - name: Check out default branch
         uses: actions/checkout@v2
@@ -31,3 +32,16 @@ jobs:
           cd ./build
           cmake -G "Unix Makefiles" -DCMAKE_C_COMPILER=clang ../cacheray
           make
+
+      - name: Check format
+        run: |
+          git ls-files *.[ch] *.inc | xargs -l1 clang-format -i
+          git diff --exit-code > format.diff
+          git reset --hard
+
+      - name: Upload format diff
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: format.diff
+          path: ./format.diff
