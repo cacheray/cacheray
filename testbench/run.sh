@@ -18,11 +18,11 @@ make --directory=./simple
 make --directory=./reorder
 
 # Create traces
-CACHERAY_FILENAME=good ./simple/simple.out g
-CACHERAY_FILENAME=bad  ./simple/simple.out b
+CACHERAY_OPTIONS=tracefile=good ./simple/simple.out g
+CACHERAY_OPTIONS=tracefile=bad  ./simple/simple.out b
 
-CACHERAY_FILENAME=good-reorder ./reorder/reorder.out g
-CACHERAY_FILENAME=bad-reorder ./reorder/reorder.out b
+CACHERAY_OPTIONS=tracefile=good-reorder ./reorder/reorder.out g
+CACHERAY_OPTIONS=tracefile=bad-reorder ./reorder/reorder.out b
 mv good.0 simple/good.trace
 mv bad.0 simple/bad.trace
 mv good-reorder.0 reorder/good-reorder.trace
