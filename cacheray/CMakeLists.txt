@@ -10,6 +10,7 @@ set(CMAKE_C_STANDARD 11)
 
 add_library(cacheray STATIC
   src/cacheray.c
+  src/cacheray_options.c
 )
 
 target_include_directories(cacheray

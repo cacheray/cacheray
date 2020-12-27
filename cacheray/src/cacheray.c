@@ -2,8 +2,9 @@
 #error "Don't sanitize cacheray"
 #endif
 
-#include "cacheray/cacheray.h"
 #include <assert.h>
+#include <cacheray/cacheray.h>
+#include <cacheray/cacheray_options.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,13 +20,7 @@
 
 static int enabled;
 static FILE *cacheray_fp;
-
-static const char *cacheray_getenv(const char *name, const char *defaultval) {
-  const char *val = getenv(name);
-  if (!val)
-    return defaultval;
-  return val;
-}
+static cacheray_options_t cacheray_opts;
 
 static unsigned char string_copy(char *dest, const char *src) {
   unsigned int i = 0;
@@ -49,9 +44,17 @@ static void cacheray_shutdown(void) {
 static void cacheray_init(void) {
   static int is_initialized = 0;
   if (!is_initialized) {
-    const char *tracefilename =
-        cacheray_getenv("CACHERAY_FILENAME", "cacheray.trace");
-    cacheray_fp = fopen(tracefilename, "w");
+    cacheray_options_init_defaults(&cacheray_opts);
+
+    const char *envopts = getenv("CACHERAY_OPTIONS");
+    if (envopts) {
+      if (!cacheray_options_parse(envopts, &cacheray_opts)) {
+        fprintf(stderr, "Cacheray: failed to parse options (out of memory)\n");
+        abort();
+      }
+    }
+
+    cacheray_fp = fopen(cacheray_opts.tracefile, "w");
     if (!cacheray_fp) {
       perror("Cacheray: failed to open trace file");
       abort();
