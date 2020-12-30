@@ -1,12 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cacheray/cacheray-utils.h"
-#include "cacheray/cacheray.h"
-
 #define COLUMNS 1024
-
-#define LOG_SIZE_MAX (1 << 26)
 
 struct node {
   short a;
@@ -40,7 +35,6 @@ int main(int argc, char **argv) {
   }
   unsigned rows = 64;
 
-  cacheray_util_simple_log_begin(LOG_SIZE_MAX);
   node_t *data = calloc(COLUMNS * rows, sizeof(node_t));
 
   if (argv[1][0] == 'g') { // good
@@ -52,6 +46,5 @@ int main(int argc, char **argv) {
   }
 
   free(data);
-  cacheray_util_simple_log_end();
   return 0;
 }

@@ -1,12 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include "cacheray/cacheray.h"
-//#include "cacheray/cacheray-utils.h"
-
 #define COLUMNS 1024
-
-#define LOG_SIZE_MAX (1 << 26)
 
 struct node {
   short a;
@@ -40,9 +35,6 @@ int main(int argc, char **argv) {
 
   node_t *data = malloc(sizeof(node_t) * COLUMNS * rows);
 
-  //  cacheray_util_simple_log_begin(LOG_SIZE_MAX);
-  //  cacheray_rtta_add(data, "node_t", sizeof(node_t), COLUMNS*rows);
-
   if (argv[1][0] == 'g') { // good
     by_row(data, rows);
   } else if (argv[1][0] == 'b') {
@@ -50,8 +42,6 @@ int main(int argc, char **argv) {
   } else {
     printf("Need b or g\n");
   }
-
-  //    cacheray_util_simple_log_end();
 
   free(data);
 

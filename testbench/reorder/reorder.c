@@ -1,13 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef USE_CACHERAY
-#include "cacheray/cacheray-utils.h"
-#include "cacheray/cacheray.h"
-#endif
-
-#define LOG_SIZE_MAX (1 << 27)
-
 #define N (1024)
 #define M (1024)
 #define ASSOC (8)
@@ -53,9 +46,6 @@ int main(int argc, char **argv) {
     printf("Need arg\n");
     return -1;
   }
-#ifdef USE_CACHERAY
-  cacheray_util_simple_log_begin(LOG_SIZE_MAX);
-#endif
   if (argv[1][0] == 'b') {
     order_a_t *list = calloc(N * M, sizeof(order_a_t));
     // cacheray_rtta_add(list, "order_a_t", sizeof(order_a_t), N*8);
@@ -67,8 +57,5 @@ int main(int argc, char **argv) {
     loop_B(list);
     free(list);
   }
-#ifdef USE_CACHERAY
-  cacheray_util_simple_log_end();
-#endif
   return 0;
 }
