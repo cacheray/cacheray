@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <cacheray/cacheray-utils.h>
-#include <cacheray/cacheray.h>
-
 /*
  * Here are the structs that we are working with:
  */
@@ -24,17 +21,7 @@ void free_ll(struct Link *head) {
   }
 }
 
-void commit(const void *buf, unsigned long size, unsigned long nmemb) {
-  char fname[100];
-  cacheray_util_get_file_name(fname);
-  cacheray_util_write_out(buf, size, nmemb, fname);
-}
-
 int main(int argc, char **argv) {
-  void *buf = malloc((2 << 15));
-
-  cacheray_start(buf, (2 << 15), commit);
-
   // LL creation
   struct Link *curr = NULL;
   struct Link *prev = NULL;
@@ -54,10 +41,6 @@ int main(int argc, char **argv) {
 
   // Free
   free_ll(head);
-
-  cacheray_stop();
-
-  free(buf);
 
   return 0;
 }

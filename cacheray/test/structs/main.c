@@ -2,17 +2,12 @@
  * This program is a test of functionalities of the struct capturing.
  */
 
-#include "cacheray/cacheray-utils.h"
-#include "cacheray/cacheray.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #if !(__has_feature(thread_sanitizer))
 #error "This code needs to be sanitized"
 #endif
-
-#define BUFFER_SIZE (10000)
-#define FILE_BASENAME "cacheray"
 
 // A basic structs
 struct Basic {
@@ -36,25 +31,10 @@ struct Deep {
   TheTdBasic *e;
 };
 
-cacheray_log_t BUFFER[BUFFER_SIZE];
-
-char fname[256];
-
-static int file_index = 0;
-
-void handle_data(const void *buf, unsigned long size, unsigned long nmemb) {
-  sprintf(fname, "%s.%d.%s", FILE_BASENAME, file_index++, "trace");
-  // FILE *fp = fopen(fname, "w");
-  cacheray_util_write_out(buf, size, nmemb, fname);
-}
-
 int main(int argc, char **argv) {
   // Test basic
   char *text = "This is some text";
   struct Basic basic_instance;
-
-  // Here we start the tracking
-  cacheray_start(BUFFER, BUFFER_SIZE, &handle_data);
 
   // Some basic global fun
   basic_instance.a = 1;
@@ -76,8 +56,6 @@ int main(int argc, char **argv) {
 
   free(basic_alloc);
   free(ttdBasic_alloc);
-
-  cacheray_stop();
 
   return 0;
 }
