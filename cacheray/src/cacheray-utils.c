@@ -14,51 +14,6 @@ void cacheray_util_get_file_name(char *fname) {
   }
 }
 
-int cacheray_check_trace(FILE *trace_file, cacheray_access_stats_t *stats) {
-  cacheray_log_t norm_event;
-  cacheray_rtta_add_t norm_rtta_add;
-  cacheray_rtta_remove_t norm_rtta_remove;
-  cacheray_event_t type;
-  int ch;
-  while ((ch = fgetc(trace_file)) != EOF) {
-    fseek(trace_file, -1, SEEK_CUR);
-    type = (unsigned char)ch;
-
-    /* Mask off high bits */
-    unsigned char base_type =
-        type & ~(CACHERAY_EVENT_MASK_UNALIGNED | CACHERAY_EVENT_MASK_ATOMIC);
-
-    /* Type-check */
-    switch (base_type) {
-    case CACHERAY_EVENT_READ ... CACHERAY_EVENT_WRITE:
-      fread(&norm_event, sizeof(cacheray_log_t), 1, trace_file);
-      break;
-    case CACHERAY_EVENT_RTTA_ADD: {
-      int size = sizeof(norm_rtta_add) - sizeof(norm_rtta_add.typename);
-      fread(&norm_rtta_add, size, 1, trace_file);
-      fread(&norm_rtta_add.typename, 1, norm_rtta_add.typename_len, trace_file);
-      break;
-    }
-    case CACHERAY_EVENT_RTTA_REMOVE: {
-      fread(&norm_rtta_remove, sizeof(norm_rtta_remove), 1, trace_file);
-      break;
-    }
-    default:
-      return CACHERAY_CHECK_WRONG_TYPE;
-    };
-
-    /* Update stats */
-    if (stats) {
-      if (stats->accs[ch] == -1) {
-        stats->accs[ch] = 0;
-      }
-      stats->accs[ch] += 1;
-    }
-  }
-
-  return CACHERAY_CHECK_CORRECT;
-}
-
 int cacheray_util_write_out(const void *buffer, unsigned long size,
                             unsigned long nmemb, const char *fname) {
   FILE *fp = fopen(fname, "w");
