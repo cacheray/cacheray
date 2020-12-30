@@ -17,12 +17,7 @@
 
 #define CACHERAY_ASSERT(...) assert(__VA_ARGS__)
 
-static char *buf; // The actual buf used to log events
-static unsigned long buf_idx;
-static unsigned long buf_len;
-static unsigned int amount_buf;
 static int enabled;
-static cacheray_buf_cb callback = NULL;
 static FILE *cacheray_fp;
 
 static const char *cacheray_getenv(const char *name, const char *defaultval) {
@@ -41,82 +36,6 @@ static unsigned char string_copy(char *dest, const char *src) {
   }
   dest[i] = '\0';
   return (unsigned char)i;
-}
-
-static void zero_buffer(void) {
-  for (unsigned long i = 0; i < buf_len; i++)
-    ((char *)buf)[i] = '\0';
-}
-
-static void copy_to_buf(const void *ptr, unsigned long size) {
-  // safety check
-  if (buf_idx + size >= buf_len) {
-    // will write outside buf
-    // TODO: send signal or something
-#ifdef DEBUG
-    abort();
-#endif
-    return;
-  }
-  for (unsigned long i = 0; i < size; i++) {
-    buf[buf_idx + i] = ((char *)ptr)[i];
-  }
-  CACHERAY_DPRINT("copied type %d to buf: N = %d\n",
-                  ((cacheray_log_t *)ptr)->type, amount_buf);
-  buf_idx += size;
-  amount_buf++;
-}
-
-/**
- * Set all data in buf to 0 and reset the buf pointer
- */
-static void reset_buffer(void) {
-  zero_buffer();
-  buf_idx = 0;
-  amount_buf = 0;
-}
-
-static void check_index(unsigned int next_index) {
-  // Buffer is full? Call the supplied function
-  if (buf_idx + next_index >= buf_len) {
-    enabled = 0;
-    callback(buf, buf_idx, amount_buf);
-    reset_buffer();
-    enabled = 1;
-    // Reset buf. For security reasons, of course
-  }
-}
-
-/**
- * Start Cacheray and enable logging
- * @param my_buffer the buf to use
- * @param my_buffer_size size of the buf
- * @param commit_func function to call when the buf is full
- * @return 0 on successful start
- */
-int cacheray_start(void *my_buffer, unsigned long my_buffer_size,
-                   cacheray_buf_cb commit_func) {
-  callback = commit_func;
-  buf = (char *)my_buffer;
-  buf_idx = 0;
-  buf_len = my_buffer_size;
-  amount_buf = 0;
-
-  enabled = 1;
-
-  return 0; // Success
-}
-
-/**
- * Stop cacheray and disable logging
- * @return the amount of memory written to buf so far
- */
-unsigned long cacheray_stop() {
-  unsigned long temp_len = buf_idx;
-  callback(buf, buf_idx, amount_buf);
-  reset_buffer();
-  enabled = 0;
-  return temp_len;
 }
 
 /* Instrumentation API */
@@ -161,8 +80,8 @@ static void cacheray_log(cacheray_event_t type, void *addr,
   fwrite(&tmp, log_size, 1, cacheray_fp);
 }
 
-void cacheray_rtta_add(void *addr, const char *typename, unsigned elem_size,
-                       unsigned elem_count) {
+static void cacheray_rtta_add(void *addr, const char *typename,
+                              unsigned elem_size, unsigned elem_count) {
   if (!enabled)
     return;
 
@@ -177,7 +96,7 @@ void cacheray_rtta_add(void *addr, const char *typename, unsigned elem_size,
   fwrite(&tmp, log_size, 1, cacheray_fp);
 }
 
-void cacheray_rtta_remove(void *addr) {
+static void cacheray_rtta_remove(void *addr) {
   if (!enabled)
     return;
 

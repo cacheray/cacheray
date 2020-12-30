@@ -50,17 +50,4 @@ typedef struct __attribute__((__packed__)) cacheray_rtta_remove {
   unsigned long threadid;
 } cacheray_rtta_remove_t;
 
-typedef void (*cacheray_buf_cb)(const void *buf, unsigned long size,
-                                unsigned long nmemb);
-
-int cacheray_start(void *my_buffer, unsigned long my_buffer_size,
-                   cacheray_buf_cb commit_func);
-
-unsigned long cacheray_stop(void);
-
-void cacheray_rtta_add(void *addr, const char *typename, unsigned elem_size,
-                       unsigned elem_count);
-
-void cacheray_rtta_remove(void *addr);
-
 #endif
