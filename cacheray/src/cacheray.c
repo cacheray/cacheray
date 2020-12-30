@@ -23,6 +23,14 @@ static unsigned long buf_len;
 static unsigned int amount_buf;
 static int enabled;
 static cacheray_buf_cb callback = NULL;
+static FILE *cacheray_fp;
+
+static const char *cacheray_getenv(const char *name, const char *defaultval) {
+  const char *val = getenv(name);
+  if (!val)
+    return defaultval;
+  return val;
+}
 
 static unsigned char string_copy(char *dest, const char *src) {
   unsigned int i = 0;
@@ -112,7 +120,28 @@ unsigned long cacheray_stop() {
 }
 
 /* Instrumentation API */
+static void cacheray_shutdown(void) {
+  enabled = 0;
+  if (cacheray_fp) {
+    fclose(cacheray_fp);
+  }
+}
+
 static void cacheray_init(void) {
+  static int is_initialized = 0;
+  if (!is_initialized) {
+    const char *tracefilename =
+        cacheray_getenv("CACHERAY_FILENAME", "cacheray.trace");
+    cacheray_fp = fopen(tracefilename, "w");
+    if (!cacheray_fp) {
+      perror("Cacheray: failed to open trace file");
+      abort();
+    }
+
+    atexit(cacheray_shutdown);
+    enabled = 1;
+    is_initialized = 1;
+  }
 }
 
 /**
@@ -129,8 +158,7 @@ static void cacheray_log(cacheray_event_t type, void *addr,
   cacheray_log_t tmp = {
       .type = type, .addr = addr, .size = size, .threadid = 0};
   unsigned int log_size = sizeof(cacheray_log_t);
-  check_index(log_size);
-  copy_to_buf(&tmp, log_size);
+  fwrite(&tmp, log_size, 1, cacheray_fp);
 }
 
 void cacheray_rtta_add(void *addr, const char *typename, unsigned elem_size,
@@ -146,8 +174,7 @@ void cacheray_rtta_add(void *addr, const char *typename, unsigned elem_size,
   tmp.typename_len = string_copy(tmp.typename, typename);
   // Full struct - buffer size + typename length
   unsigned int log_size = sizeof(tmp) - sizeof(tmp.typename) + tmp.typename_len;
-  check_index(log_size);
-  copy_to_buf(&tmp, log_size);
+  fwrite(&tmp, log_size, 1, cacheray_fp);
 }
 
 void cacheray_rtta_remove(void *addr) {
@@ -159,8 +186,7 @@ void cacheray_rtta_remove(void *addr) {
       .threadid = 0,
       .addr = addr,
   };
-  check_index(sizeof(tmp));
-  copy_to_buf(&tmp, sizeof(tmp));
+  fwrite(&tmp, sizeof(tmp), 1, cacheray_fp);
 }
 
 #include "cacheray_instrum.inc"
