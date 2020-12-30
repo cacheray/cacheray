@@ -1,5 +1,5 @@
 CC=${LLVM_BUILD_DIR}/bin/clang
-CFLAGS=-Xclang -load -Xclang ${LLVM_BUILD_DIR}/lib/LLVMMallocTracker.so -g -O0 -fsanitize=thread -I/home/hastrom/cache/cacheray/include -DUSE_CACHERAY
+CFLAGS=-Xclang -load -Xclang ${LLVM_BUILD_DIR}/lib/LLVMMallocTracker.so -g -O0 -fsanitize=thread
 CFLAGS_N=-g -O0
 LDFLAGS=-L/home/hastrom/cache/cacheray/build/lib/ -lcacheray
 
