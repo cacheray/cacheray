@@ -9,8 +9,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_C_STANDARD 11)
 
 add_library(cacheray STATIC
-        src/cacheray.c
-        src/cacheray-utils.c )
+  src/cacheray.c
+)
 
 target_include_directories(cacheray
         PUBLIC
