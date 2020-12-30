@@ -17,8 +17,6 @@
 
 #define CACHERAY_ASSERT(...) assert(__VA_ARGS__)
 
-#define buf_write(X, Y) _Generic((X), event_type_t:)
-
 static char *buf; // The actual buf used to log events
 static unsigned long buf_idx;
 static unsigned long buf_len;
@@ -79,28 +77,6 @@ static void check_index(unsigned int next_index) {
     enabled = 1;
     // Reset buf. For security reasons, of course
   }
-}
-
-/**
- * Enable Cacheray logging
- */
-static void cacheray_enable_log(void) {
-  enabled = 1;
-}
-
-/**
- * Disable Cacheray logging
- */
-static void cacheray_disable_log(void) {
-  enabled = 0;
-}
-
-/**
- * Return the state of Cacheray logging
- * @return 1 if logging is enabled, 0 if disabled
- */
-static int cacheray_is_enabled(void) {
-  return enabled;
 }
 
 /**
