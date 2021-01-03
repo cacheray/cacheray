@@ -31,6 +31,8 @@ static void cacheray_options_set(cacheray_options_t *options, const char *key,
       fprintf(stderr, "Cacheray: tracefile error %d for '%s'\n", r, val);
       abort();
     }
+  } else if (!strcmp(key, "enabled")) {
+    options->enabled = !!strcmp(val, "0");
   } else {
     fprintf(stderr, "Cacheray: unknown option: '%s'\n", key);
   }
@@ -38,6 +40,7 @@ static void cacheray_options_set(cacheray_options_t *options, const char *key,
 
 void cacheray_options_init_defaults(cacheray_options_t *options) {
   strcpy(options->tracefile, "cacheray.trace");
+  options->enabled = 1;
 }
 
 int cacheray_options_parse(const char *optstr, cacheray_options_t *options) {

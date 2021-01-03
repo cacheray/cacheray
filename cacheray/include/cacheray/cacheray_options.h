@@ -2,6 +2,7 @@
 #define CACHERAY_OPTIONS_H_INCLUDED
 
 typedef struct cacheray_options {
+  int enabled;
   char tracefile[256];
 } cacheray_options_t;
 
