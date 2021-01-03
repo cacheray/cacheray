@@ -61,7 +61,7 @@ static void cacheray_init(void) {
     }
 
     atexit(cacheray_shutdown);
-    enabled = 1;
+    enabled = cacheray_opts.enabled;
     is_initialized = 1;
   }
 }
