@@ -1,4 +1,5 @@
 #include "cacheray/cacheray.h"
+#include <cacheray/cacheray_trace.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,13 +19,16 @@ typedef struct {
 
 static int cacheray_check_trace(FILE *trace_file,
                                 cacheray_access_stats_t *stats) {
-  cacheray_log_t norm_event;
-  cacheray_rtta_add_t norm_rtta_add;
-  cacheray_rtta_remove_t norm_rtta_remove;
   cacheray_event_t type;
+  void *addr;
+  uint8_t size;
+  uint64_t threadid;
+  uint32_t elem_size;
+  uint32_t elem_count;
+  char typename[256];
+
   int ch;
   while ((ch = fgetc(trace_file)) != EOF) {
-    fseek(trace_file, -1, SEEK_CUR);
     type = (unsigned char)ch;
 
     /* Mask off high bits */
@@ -34,18 +38,25 @@ static int cacheray_check_trace(FILE *trace_file,
     /* Type-check */
     switch (base_type) {
     case CACHERAY_EVENT_READ ... CACHERAY_EVENT_WRITE:
-      fread(&norm_event, sizeof(cacheray_log_t), 1, trace_file);
+      cacheray_get_ptr(trace_file, &addr);
+      cacheray_get_u8(trace_file, &size);
+      cacheray_get_u64(trace_file, &threadid);
       break;
-    case CACHERAY_EVENT_RTTA_ADD: {
-      int size = sizeof(norm_rtta_add) - sizeof(norm_rtta_add.typename);
-      fread(&norm_rtta_add, size, 1, trace_file);
-      fread(&norm_rtta_add.typename, 1, norm_rtta_add.typename_len, trace_file);
+
+    case CACHERAY_EVENT_RTTA_ADD:
+      cacheray_get_ptr(trace_file, &addr);
+      cacheray_get_u64(trace_file, &threadid);
+      cacheray_get_u32(trace_file, &elem_size);
+      cacheray_get_u32(trace_file, &elem_count);
+      /* We don't care about the data, so allow truncation */
+      cacheray_get_str_trunc(trace_file, typename, sizeof(typename));
       break;
-    }
-    case CACHERAY_EVENT_RTTA_REMOVE: {
-      fread(&norm_rtta_remove, sizeof(norm_rtta_remove), 1, trace_file);
+
+    case CACHERAY_EVENT_RTTA_REMOVE:
+      cacheray_get_ptr(trace_file, &addr);
+      cacheray_get_u64(trace_file, &threadid);
       break;
-    }
+
     default:
       return CACHERAY_CHECK_WRONG_TYPE;
     };
