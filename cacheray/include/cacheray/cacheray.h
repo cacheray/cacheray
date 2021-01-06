@@ -25,29 +25,4 @@ typedef unsigned char cacheray_event_t;
 #define CACHERAY_EVENT_MASK_UNALIGNED (cacheray_event_t)(1 << 7)
 #define CACHERAY_EVENT_MASK_ATOMIC (cacheray_event_t)(1 << 6)
 
-/* Memory access events */
-typedef struct __attribute__((__packed__)) cacheray_log_l {
-  cacheray_event_t type;
-  void *addr;
-  unsigned char size;
-  unsigned long threadid; /* big enough to fit a pthread_t :-/ */
-} cacheray_log_t;
-
-/* Run-Time Type Annotation (RTTA) events */
-typedef struct __attribute__((__packed__)) cacheray_rtta_add {
-  cacheray_event_t type;
-  void *addr;
-  unsigned long threadid;
-  unsigned elem_size;
-  unsigned elem_count;
-  unsigned typename_len;
-  char typename[256];
-} cacheray_rtta_add_t;
-
-typedef struct __attribute__((__packed__)) cacheray_rtta_remove {
-  cacheray_event_t type;
-  void *addr;
-  unsigned long threadid;
-} cacheray_rtta_remove_t;
-
 #endif
