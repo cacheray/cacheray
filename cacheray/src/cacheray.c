@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <cacheray/cacheray.h>
 #include <cacheray/cacheray_options.h>
+#include <cacheray/cacheray_trace.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,15 +24,9 @@ static int enabled;
 static FILE *cacheray_fp;
 static cacheray_options_t cacheray_opts;
 
-static unsigned char string_copy(char *dest, const char *src) {
-  unsigned int i = 0;
-  char c;
-  while ((c = src[i])) {
-    dest[i] = c;
-    i++;
-  }
-  dest[i] = '\0';
-  return (unsigned char)i;
+static inline uint64_t cacheray_threadid(void) {
+  /* TODO: Use some threading library construct */
+  return 0;
 }
 
 /* Instrumentation API */
@@ -77,10 +73,10 @@ static void cacheray_log(cacheray_event_t type, void *addr,
   if (!enabled)
     return;
 
-  cacheray_log_t tmp = {
-      .type = type, .addr = addr, .size = size, .threadid = 0};
-  unsigned int log_size = sizeof(cacheray_log_t);
-  fwrite(&tmp, log_size, 1, cacheray_fp);
+  cacheray_put_u8(cacheray_fp, type);
+  cacheray_put_ptr(cacheray_fp, addr);
+  cacheray_put_u8(cacheray_fp, size);
+  cacheray_put_u64(cacheray_fp, cacheray_threadid());
 }
 
 static void cacheray_rtta_add(void *addr, const char *typename,
@@ -88,27 +84,21 @@ static void cacheray_rtta_add(void *addr, const char *typename,
   if (!enabled)
     return;
 
-  cacheray_rtta_add_t tmp = {.type = CACHERAY_EVENT_RTTA_ADD,
-                             .threadid = 0,
-                             .addr = addr,
-                             .elem_size = elem_size,
-                             .elem_count = elem_count};
-  tmp.typename_len = string_copy(tmp.typename, typename);
-  // Full struct - buffer size + typename length
-  unsigned int log_size = sizeof(tmp) - sizeof(tmp.typename) + tmp.typename_len;
-  fwrite(&tmp, log_size, 1, cacheray_fp);
+  cacheray_put_u8(cacheray_fp, CACHERAY_EVENT_RTTA_ADD);
+  cacheray_put_ptr(cacheray_fp, addr);
+  cacheray_put_u64(cacheray_fp, cacheray_threadid());
+  cacheray_put_u32(cacheray_fp, elem_size);
+  cacheray_put_u32(cacheray_fp, elem_count);
+  cacheray_put_str(cacheray_fp, typename);
 }
 
 static void cacheray_rtta_remove(void *addr) {
   if (!enabled)
     return;
 
-  cacheray_rtta_remove_t tmp = {
-      .type = CACHERAY_EVENT_RTTA_REMOVE,
-      .threadid = 0,
-      .addr = addr,
-  };
-  fwrite(&tmp, sizeof(tmp), 1, cacheray_fp);
+  cacheray_put_u8(cacheray_fp, CACHERAY_EVENT_RTTA_REMOVE);
+  cacheray_put_ptr(cacheray_fp, addr);
+  cacheray_put_u64(cacheray_fp, cacheray_threadid());
 }
 
 #include "cacheray_instrum.inc"
