@@ -482,8 +482,8 @@ a32 __tsan_atomic32_fetch_xor(volatile a32 *a, a32 v, morder mo) {
 }
 
 a64 __tsan_atomic64_fetch_xor(volatile a64 *a, a64 v, morder mo) {
-  cacheray_log(CACHERAY_EVENT_MASK_ATOMIC | CACHERAY_EVENT_READ, (void *)a, 4);
-  cacheray_log(CACHERAY_EVENT_MASK_ATOMIC | CACHERAY_EVENT_WRITE, (void *)a, 4);
+  cacheray_log(CACHERAY_EVENT_MASK_ATOMIC | CACHERAY_EVENT_READ, (void *)a, 8);
+  cacheray_log(CACHERAY_EVENT_MASK_ATOMIC | CACHERAY_EVENT_WRITE, (void *)a, 8);
   return __atomic_fetch_xor(a, v, to_gcc_mo(mo));
 }
 
